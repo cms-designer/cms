@@ -36,6 +36,7 @@ if (isset($_GET['a']) && $_GET['a'] === 'adminpanel') {
     include __DIR__ . '/../views/adminpanel.php';
     exit;
 }
+/*
 if (isset($_GET['a']) && $_GET['a'] === 'assignGroupForm') {
     if (!Session::isLoggedIn()) {
         header('Location: index.php?c=Auth&a=login');
@@ -66,6 +67,12 @@ if (isset($_GET['a']) && $_GET['a'] === 'assignGroup' && $_SERVER['REQUEST_METHO
     header('Location: index.php?a=assignGroupForm');
     exit;
 }
+*/
+
+
+
+
+
 
 // Standard-MVC-Controller-Handling
 $controller = $_GET['c'] ?? 'Auth';

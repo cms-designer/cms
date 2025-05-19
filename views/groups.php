@@ -1,3 +1,6 @@
+<?php
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+?>
 <?php include __DIR__ . '/header.php'; ?>
 <div class="row justify-content-center">
     <div class="col-lg-8 mt-4">
@@ -22,12 +25,16 @@
                         <td><?= htmlspecialchars($group['id']) ?></td>
                         <td><?= htmlspecialchars($group['name']) ?></td>
                         <td>
-                            <a href="index.php?c=Group&a=edit&id=<?= $group['id'] ?>" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-pencil"></i> Bearbeiten
+                            <a href="index.php?c=Group&a=edit&id=<?= $group['id'] ?>" class="btn btn-outline-primary btn-sm" title="Bearbeiten">
+                                <i class="bi bi-pencil"></i>
                             </a>
-                            <a href="index.php?c=Group&a=delete&id=<?= $group['id'] ?>" class="btn btn-outline-danger btn-sm" onclick="return confirm('Sicher?')">
-                                <i class="bi bi-trash"></i> Löschen
-                            </a>
+                            <!-- CSRF-geschützte Löschfunktion -->
+                            <form action="index.php?c=Group&a=delete&id=<?= $group['id'] ?>" method="post" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+                                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Sicher?')" title="Löschen">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>

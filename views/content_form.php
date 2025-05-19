@@ -6,6 +6,8 @@
             <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
         <form method="post">
+            <!-- CSRF-Schutz -->
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
             <div class="mb-3">
                 <label for="title" class="form-label">Titel</label>
                 <input type="text" class="form-control" id="title" name="title" maxlength="255"

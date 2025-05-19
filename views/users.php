@@ -1,3 +1,6 @@
+<?php
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+?>
 <?php include __DIR__ . '/header.php'; ?>
 <div class="row justify-content-center">
     <div class="col-lg-10 mt-4">
@@ -47,12 +50,13 @@
        title="Bearbeiten">
         <i class="bi bi-pencil"></i>
     </a>
-    <a href="index.php?c=User&a=delete&id=<?= $user['id'] ?>" 
-       class="btn btn-outline-danger btn-sm" 
-       title="Löschen"
-       onclick="return confirm('Sicher?')">
-        <i class="bi bi-trash"></i>
-    </a>
+    <form action="index.php?c=User&a=delete&id=<?= $user['id'] ?>" method="post" style="display:inline;">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+        <button type="submit" class="btn btn-outline-danger btn-sm" title="Löschen"
+           onclick="return confirm('Sicher?')">
+            <i class="bi bi-trash"></i>
+        </button>
+    </form>
     <a href="index.php?c=User&a=changePassword&id=<?= $user['id'] ?>" 
        class="btn btn-outline-warning btn-sm" 
        title="Passwort ändern">

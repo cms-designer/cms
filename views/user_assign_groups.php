@@ -1,3 +1,6 @@
+<?php
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+?>
 <?php include __DIR__ . '/header.php'; ?>
 <div class="row justify-content-center">
     <div class="col-md-7 col-lg-6">
@@ -6,6 +9,8 @@
             <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
         <?php endif; ?>
         <form method="post">
+            <!-- CSRF-Schutz -->
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
             <div class="mb-3">
                 <label class="form-label">Gruppen</label>
                 <?php foreach ($allGroups as $group): ?>

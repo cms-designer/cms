@@ -23,6 +23,8 @@
     <?php echo LBL_CONTENTVIEW; ?>
 </a>
                     <form method="post" action="index.php?c=Auth&a=logout" class="mt-3">
+                        <!-- CSRF-Schutz -->
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                         <button type="submit" class="list-group-item list-group-item-action text-danger border-danger d-flex align-items-center gap-2" style="background: #fff;">
                             <span class="bi bi-box-arrow-right"></span>
                             <?php echo LBL_LOGOUT; ?>

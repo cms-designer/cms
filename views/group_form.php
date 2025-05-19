@@ -1,3 +1,6 @@
+<?php
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+?>
 <?php include __DIR__ . '/header.php'; ?>
 <div class="row justify-content-center">
     <div class="col-lg-6 col-md-8 mt-4">
@@ -7,6 +10,8 @@
                     <?= isset($group) ? 'Gruppe bearbeiten' : 'Neue Gruppe anlegen' ?>
                 </h2>
                 <form method="post" autocomplete="off">
+                    <!-- CSRF-Schutz -->
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                     <div class="mb-3">
                         <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
                         <input

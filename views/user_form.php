@@ -1,3 +1,6 @@
+<?php
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+?>
 <?php include __DIR__ . '/header.php'; ?>
 <div class="row justify-content-center">
     <div class="col-lg-6 col-md-8 mt-4">
@@ -16,6 +19,9 @@
                 <?php endif; ?>
 
                 <form method="post" autocomplete="off">
+                    <!-- CSRF-Schutz: Token als Hidden-Field -->
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+                    
                     <div class="mb-3">
                         <label for="username" class="form-label">Benutzername <span class="text-danger">*</span></label>
                         <input

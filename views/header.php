@@ -76,6 +76,10 @@
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
+// CSRF-Token für Logout-Formular setzen, falls nicht vorhanden
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 ?>
 <?php if (!isset($show_menu) || $show_menu !== false): ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -144,6 +148,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 </a>
                 <!-- Logout -->
                 <form method="post" action="index.php?c=Auth&a=logout" class="d-inline m-0 p-0">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                     <button type="submit" class="btn btn-logout" title="<?php echo LBL_LOGOUT; ?>">
                         <i class="bi bi-box-arrow-right"></i>
                     </button>

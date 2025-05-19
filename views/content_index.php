@@ -1,3 +1,6 @@
+<?php
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+?>
 <?php include __DIR__ . '/header.php'; ?>
 <div class="row justify-content-center">
     <div class="col-lg-10 mt-4">
@@ -22,7 +25,7 @@
                 <?php 
                 $contentModel = new Content();
                 foreach ($contents as $row): 
-                    // Hole die Gruppen für diesen Content (du brauchst eine passende Methode im Content Model!)
+                    // Hole die Gruppen für diesen Content
                     $groups = $contentModel->getGroups($row['id']);
                     $groupNames = array_map(function($g) { return htmlspecialchars($g['name']); }, $groups);
                 ?>
@@ -38,14 +41,18 @@
                             <?php endif; ?>
                         </td>
                         <td>
-                            <a href="index.php?c=Content&a=edit&id=<?= $row['id'] ?>" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-pencil"></i> Bearbeiten
+                            <a href="index.php?c=Content&a=edit&id=<?= $row['id'] ?>" class="btn btn-outline-primary btn-sm" title="Bearbeiten">
+                                <i class="bi bi-pencil" alt="Bearbeiten"></i>
                             </a>
-                            <a href="index.php?c=Content&a=delete&id=<?= $row['id'] ?>" class="btn btn-outline-danger btn-sm" onclick="return confirm('Sicher?')">
-                                <i class="bi bi-trash"></i> Löschen
-                            </a>
-                            <a href="index.php?c=Content&a=assignGroups&id=<?= $row['id'] ?>" class="btn btn-outline-info btn-sm">
-                                <i class="bi bi-people"></i> Gruppe zuweisen
+                            <!-- CSRF-geschützte Löschfunktion -->
+                            <form action="index.php?c=Content&a=delete&id=<?= $row['id'] ?>" method="post" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+                                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Sicher?')" title="Löschen">
+                                    <i class="bi bi-trash" alt="Löschen"></i>
+                                </button>
+                            </form>
+                            <a href="index.php?c=Content&a=assignGroups&id=<?= $row['id'] ?>" class="btn btn-outline-info btn-sm" title="Gruppe zuweisen">
+                                <i class="bi bi-people" alt="Gruppe zuweisen"></i>
                             </a>
                         </td>
                     </tr>

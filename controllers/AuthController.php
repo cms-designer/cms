@@ -48,13 +48,27 @@ class AuthController {
         include __DIR__ . '/../views/login.php';
     }
 
-    public function logout() {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-        session_unset();
-        session_destroy();
+public function logout() {
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+    // Nur POST akzeptieren
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         header('Location: index.php');
         exit;
     }
+    // CSRF-Token prüfen
+    if (
+        empty($_POST['csrf_token']) ||
+        empty($_SESSION['csrf_token']) ||
+        !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
+    ) {
+        http_response_code(403);
+        die('Ungültiges CSRF-Token!');
+    }
+    session_unset();
+    session_destroy();
+    header('Location: index.php');
+    exit;
+}
 }

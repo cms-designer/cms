@@ -1,3 +1,6 @@
+<?php
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+?>
 <?php include __DIR__ . '/header.php'; ?>
 
 <div class="row justify-content-center">
@@ -11,6 +14,8 @@
         <?php endif; ?>
 
         <form method="post" action="">
+            <!-- CSRF-Schutz -->
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
             <div class="mb-3">
                 <label for="password" class="form-label">Neues Passwort</label>
                 <input type="password" class="form-control" id="password" name="password" required autocomplete="new-password">
