@@ -5,7 +5,16 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 */
 session_start();
+
+// CSRF-Token generieren, wenn nicht vorhanden
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 require_once '../config/config.php';
+// CSRF-Token generieren, wenn nicht vorhanden
+
+
 
 // Autoloader für Models und Controller
 spl_autoload_register(function($class) {

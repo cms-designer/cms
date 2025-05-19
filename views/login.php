@@ -1,6 +1,7 @@
 <?php 
- $show_menu = false; include __DIR__ . '/header.php'; ?>
-
+$show_menu = false; 
+include __DIR__ . '/header.php'; 
+?>
 
 <div class="row justify-content-center">
     <div class="col-md-6 col-lg-4 mt-5">
@@ -8,6 +9,8 @@
             <div class="card-body">
                 <h2 class="card-title text-center mb-4">Login</h2>
                 <form method="post" autocomplete="off">
+                    <!-- CSRF-Schutz: Token als Hidden-Field einfügen -->
+                    <input type="hidden" name="csrf_token" value="<?= isset($_SESSION['csrf_token']) ? htmlspecialchars($_SESSION['csrf_token']) : '' ?>">
                     <div class="mb-3">
                         <label for="username" class="form-label">Benutzername</label>
                         <input
