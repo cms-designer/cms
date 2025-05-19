@@ -71,7 +71,7 @@ $tableSQL = [
         `id` int(11) NOT NULL AUTO_INCREMENT,
         `username` varchar(50) NOT NULL,
         `password` varchar(255) NOT NULL,
-        `email` varchar(255) DEFAULT NULL,
+        `email` varchar(191) DEFAULT NULL,
         `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
         `role` tinyint(1) NOT NULL DEFAULT 1,
         PRIMARY KEY (`id`),
@@ -91,14 +91,14 @@ $tableSQL = [
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;"
 ];
 
-// Foreign Keys separat (optional, Fehler werden ignoriert)
+// Foreign Keys separat (Fehler werden protokolliert, Installation läuft weiter)
 $foreignSQL = [
     "ALTER TABLE `content_group`
-        ADD CONSTRAINT IF NOT EXISTS `content_group_ibfk_1` FOREIGN KEY (`content_id`) REFERENCES `content` (`id`) ON DELETE CASCADE,
-        ADD CONSTRAINT IF NOT EXISTS `content_group_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE;",
+        ADD CONSTRAINT `content_group_ibfk_1` FOREIGN KEY (`content_id`) REFERENCES `content` (`id`) ON DELETE CASCADE,
+        ADD CONSTRAINT `content_group_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE;",
     "ALTER TABLE `user_group`
-        ADD CONSTRAINT IF NOT EXISTS `user_group_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-        ADD CONSTRAINT IF NOT EXISTS `user_group_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE;"
+        ADD CONSTRAINT `user_group_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+        ADD CONSTRAINT `user_group_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE;"
 ];
 
 // Installationslogik
@@ -123,28 +123,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo = new PDO($dsn, $dbuser, $dbpass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
             $stepMsg = "Verbindung zur Datenbank erfolgreich.";
 
-            // Schritt 2: Neue Tabellenstruktur anlegen
+            // Foreign Key Checks deaktivieren (zur Sicherheit)
+            $pdo->exec("SET foreign_key_checks = 0;");
+
+            // Schritt 2: Neue Tabellenstruktur anlegen (Fehler sichtbar!)
             foreach ($tableSQL as $sql) {
-                try { $pdo->exec($sql); $tablesCreated = true; }
-                catch (PDOException $e) { /* Fehler ignorieren */ }
+                $pdo->exec($sql);
             }
+            $tablesCreated = true;
+
+            // Foreign Key Checks wieder aktivieren
+            $pdo->exec("SET foreign_key_checks = 1;");
+
+            // Schritt 2b: Foreign Keys anlegen (Fehler werden angezeigt, Installation läuft weiter)
             foreach ($foreignSQL as $sql) {
-                try { $pdo->exec($sql); } catch (PDOException $e) {}
+                try {
+                    $pdo->exec($sql);
+                } catch (PDOException $e) {
+                    $stepMsg .= "<br>Warnung (FK): " . $e->getMessage();
+                }
             }
+
+            // Prüfe, ob 'users'-Tabelle existiert (Fehlerausgabe!)
+            $check = $pdo->query("SHOW TABLES LIKE 'users'")->fetch();
+            if (!$check) throw new Exception("Tabelle 'users' konnte nicht angelegt werden! Prüfe die CREATE TABLE-Syntax und MySQL-Version.");
+
             $stepMsg = "Tabellenstruktur wurde erstellt.";
 
             // Schritt 3: Backup importieren oder Admin + Beispieldaten einfügen
             if ($hasBackup) {
                 $sqlContent = file_get_contents($_FILES['backup']['tmp_name']);
                 // Splitte in einzelne Statements (sicherer für größere Dumps)
-                $statements = preg_split('/;(\r?\n)/', $sqlContent);
+                $statements = preg_split('/;(\r?\n|\r)/', $sqlContent);
                 foreach ($statements as $stmt) {
                     $stmt = trim($stmt);
                     if ($stmt && stripos($stmt, 'CREATE TABLE') === false && stripos($stmt, 'ALTER TABLE') === false) {
                         try {
                             $pdo->exec($stmt);
                         } catch(PDOException $e) {
-                            // Fehler ignorieren, ggf. Protokoll ergänzen
+                            $stepMsg .= "<br>Warnung (Import): " . $e->getMessage();
                         }
                     }
                 }
@@ -194,6 +211,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } catch (PDOException $e) {
             $error = "Fehler bei der Installation: " . $e->getMessage();
             $stepMsg = "Fehler beim Ausführen.";
+        } catch (Exception $e) {
+            $error = $e->getMessage();
+            $stepMsg = "Fehler beim Ausführen.";
         }
     }
 }
@@ -234,7 +254,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
                         <?php if($stepMsg): ?>
-                            <div class="mt-2 text-secondary"><?= htmlspecialchars($stepMsg) ?></div>
+                            <div class="mt-2 text-secondary"><?= $stepMsg ?></div>
                         <?php endif; ?>
                     </div>
                     <?php if($success): ?>
