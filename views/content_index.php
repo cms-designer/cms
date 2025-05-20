@@ -5,9 +5,9 @@ if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 <div class="row justify-content-center">
     <div class="col-lg-10 mt-4">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-            <h2 class="mb-0">Content-Liste</h2>
+            <h2 class="mb-0"> <?php echo LBL_CONTENTLIST; ?></h2>
             <a href="index.php?c=Content&a=create" class="btn btn-success">
-                <i class="bi bi-plus-lg"></i> Neuen Eintrag anlegen
+                <i class="bi bi-plus-lg"></i> <?php echo LBL_CONTENTADD; ?>
             </a>
         </div>
         <div class="table-responsive">
@@ -15,10 +15,10 @@ if (session_status() !== PHP_SESSION_ACTIVE) session_start();
                 <thead class="table-light">
                     <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">Titel</th>
-                        <th scope="col">Inhalt (Vorschau)</th>
-                        <th scope="col">Gruppen</th>
-                        <th scope="col">Aktionen</th>
+                        <th scope="col"><?php echo LBL_CONTENTLIST; ?></th>
+                        <th scope="col"><?php echo LBL_CONTENTDISCRIBE; ?></th>
+                        <th scope="col"><?php echo LBL_CONTENTGROUP; ?></th>
+                        <th scope="col"><?php echo LBL_CONTENTACTION; ?></th>
                     </tr>
                 </thead>
                 <tbody>

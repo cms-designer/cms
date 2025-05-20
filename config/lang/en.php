@@ -14,3 +14,9 @@ define('LBL_LOGOUT', 'Logout');
 
 // Define Menu view/adminkonsole.php
 define('LBL_CONSOLE', 'Console'); // Rest bis jetzt aus define von view/header
+
+//Define view/content_index.php
+define('LBL_CONTENTLIST', 'Content List');
+define('LBL_CONTENTDISCRIBE', 'Content (Preview)');
+define('LBL_CONTENTGROUP', 'Groups');
+define('LBL_CONTENTACTION', 'Actions');
